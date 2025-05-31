@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Alpaca Image Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #efefef;
+      display: flex;
+      justify-content: space-around;
+      padding: 20px;
+    }
+    .container {
+      display: flex;
+      gap: 40px;
+    }
+    .alpaca-box {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      background: #0b2242;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .alpaca-box img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .controls {
+      max-width: 300px;
+    }
+    .controls h2 {
+      font-size: 20px;
+    }
+    .button-group {
+      margin-bottom: 15px;
+    }
+    .button-group button {
+      background: white;
+      border: 2px solid #3a7cff;
+      border-radius: 20px;
+      padding: 5px 12px;
+      margin: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .button-group button.active, .button-group button:hover {
+      background: #3a7cff;
+      color: white;
+    }
+    .footer-btns {
+      display: flex;
+      gap: 10px;
+    }
+    .footer-btns button {
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+    }
+    .random { background: #2e86ff; color: white; }
+    .download { background: #4CAF50; color: white; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="alpaca-box" id="alpaca-box">
+      <img src="./alpaca/backgrounds/blue50.png" id="background">
+      <img src="./alpaca/neck/default.png" id="neck">
+      <img src="./alpaca/ears/default.png" id="ears">
+      <img src="./alpaca/hair/default.png" id="hair">
+      <img src="./alpaca/eyes/default.png" id="eyes">
+      <img src="./alpaca/mouth/default.png" id="mouth">
+      <img src="./alpaca/accessories/none.png" id="accessories">
+    </div>
+
+    <div class="controls">
+      <h2>ACCESSORIZE THE ALPACA'S</h2>
+      <div class="button-group" id="category-buttons">
+        <button onclick="setCategory('hair')">Hair</button>
+        <button onclick="setCategory('eyes')">Eyes</button>
+        <button onclick="setCategory('ears')">Ears</button>
+        <button onclick="setCategory('mouth')">Mouth</button>
+        <button onclick="setCategory('neck')">Neck</button>
+        <button onclick="setCategory('accessories')">Accessories</button>
+        <button onclick="setCategory('background')">Background</button>
+      </div>
+
+      <h2>STYLE</h2>
+      <div class="button-group" id="style-buttons">
+        <!-- Dynamic buttons appear here -->
+      </div>
+
+      <div class="footer-btns">
+        <button class="random" onclick="randomize()">Random</button>
+        <button class="download" onclick="downloadImage()">Download</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <script>
+    const styles = {
+      hair: ['default', 'bang', 'curls', 'elegant', 'quiff', 'short'],
+      eyes: ['default', 'angry', 'naughty', 'panda', 'smart', 'star'],
+      ears: ['default', 'tilt-backward', 'tilt-forward'],
+      mouth: ['default', 'astonished', 'eating', 'laugh', 'tongue'],
+      neck: ['default', 'bend-backward', 'bend-forward', 'thick'],
+      accessories: ['none', 'earings', 'flower', 'glasses', 'headphone'],
+      background: ['blue50', 'darkblue30', 'green50', 'red50', 'yellow50']
+    };
+
+    let currentCategory = 'hair';
+
+    function setCategory(category) {
+      currentCategory = category;
+      const btnContainer = document.getElementById('style-buttons');
+      btnContainer.innerHTML = '';
+      styles[category].forEach(style => {
+        const btn = document.createElement('button');
+        btn.innerText = style;
+        btn.onclick = () => changeStyle(category, style);
+        btnContainer.appendChild(btn);
+      });
+    }
+
+    function changeStyle(category, style) {
+      const img = document.getElementById(category);
+      img.src = `./alpaca/${category}/${style}.png`;
+    }
+
+    function randomize() {
+      Object.keys(styles).forEach(cat => {
+        const randomStyle = styles[cat][Math.floor(Math.random() * styles[cat].length)];
+        changeStyle(cat, randomStyle);
+      });
+    }
+
+    function downloadImage() {
+      html2canvas(document.getElementById("alpaca-box"), {
+  useCORS: true,
+  backgroundColor: null // Prevents white background behind transparent PNG
+}).then(canvas => {
+  const link = document.createElement('a');
+  link.download = 'alpaca.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+});
+
+    }
+
+    // Initialize with Hair
+    setCategory('hair');
+  </script>
+</body>
+</html>
